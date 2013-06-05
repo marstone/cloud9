@@ -50,6 +50,11 @@ cl::opt<unsigned int> BalanceRate("balance-rate",
         cl::desc("The rate at which load balancing decisions take place, measured in rounds"),
         cl::init(2));
 
+// add by marstone, 2013/06/06
+cl::opt<unsigned int> BalanceThreshold("balance-threshold",
+        cl::desc("The threshold multiplier at which load balancing decisions take place"),
+        cl::init(100));
+
 cl::opt<unsigned int> TimerRate("timer-rate", cl::desc(
     "The rate at which the internal timer triggers, measured in seconds"),
     cl::init(1));
@@ -401,8 +406,9 @@ bool LoadBalancer::analyzeBalance(std::map<worker_id_t, unsigned> &load,
   std::sort(loadVec.begin(), loadVec.end(), LoadCompare());
 
   // Compute average and deviation
+  // commented the sqDeviation computing. useless. by marstone, 2013/06/05
   unsigned loadAvg = 0;
-  unsigned sqDeviation = 0;
+  // unsigned sqDeviation = 0;
 
   for (std::vector<load_t>::iterator it = loadVec.begin(); it != loadVec.end(); it++) {
     loadAvg += it->second;
@@ -414,11 +420,11 @@ bool LoadBalancer::analyzeBalance(std::map<worker_id_t, unsigned> &load,
 
   loadAvg /= loadVec.size();
 
-  for (std::vector<load_t>::iterator it = loadVec.begin(); it != loadVec.end(); it++) {
-    sqDeviation += (loadAvg - it->second) * (loadAvg - it->second);
-  }
+  //for (std::vector<load_t>::iterator it = loadVec.begin(); it != loadVec.end(); it++) {
+  //  sqDeviation += (loadAvg - it->second) * (loadAvg - it->second);
+  //}
 
-  sqDeviation /= loadVec.size() - 1;
+  //sqDeviation /= loadVec.size() - 1;
 
   std::vector<load_t>::iterator lowLoadIt = loadVec.begin();
   std::vector<load_t>::iterator highLoadIt = loadVec.end() - 1;
@@ -450,7 +456,10 @@ void LoadBalancer::analyzeAggregateBalance() {
     load[it->first] = it->second->totalJobs;
   }
 
-  bool result = analyzeBalance(load, xfers, 10, 1);
+  // changed threshold from 10 to BalanceThreshold, by marstone, 2013/06/06
+  // indeed, max is more more reasonable, because,
+  // if one has work, he devote himself to finish it and no need to have more until he finished.
+  bool result = analyzeBalance(load, xfers, BalanceThreshold, 1);
 
   if (!result) {
     done = true;

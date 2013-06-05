@@ -217,6 +217,12 @@ namespace klee {
   /// \param s - The underlying solver to use.
   Solver *createCexCachingSolver(Solver *s);
 
+  ///
+  /// CexCachingSolver shared memory version
+  /// 
+  /// \param s - The underlying solver to use.
+  Solver *createCexSharedSolver(Solver *s);
+
   /// createFastCexSolver - Create a "fast counterexample solver", which tries
   /// to quickly compute a satisfying assignment for a constraint set using
   /// value propogation and range analysis.

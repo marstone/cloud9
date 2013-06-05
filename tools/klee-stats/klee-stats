@@ -173,7 +173,7 @@ Tfork:   Time spent forking (%)""")
     summary = []
     
     if (opts.printAll):
-        labels = ('Path','Instrs','Time(s)','ICov(%)','BCov(%)','ICount','Solver(%)', 'States', 'Mem(MB)', 'Queries', 'AvgQC', 'Tcex(%)', 'Tfork(%)')
+        labels = ('Path','Instrs','Time(s)','ICov(%)','BCov(%)','ICount','Solver(%)', 'States', 'Mem(MB)', 'Queries', 'AvgQC', 'Tcex(%)', 'Tfork(%)', 'Tres(%)' , 'Tucex(%)')
     elif (opts.printMore):
         labels = ('Path','Instrs','Time(s)','ICov(%)','BCov(%)','ICount','Solver(%)', 'States', 'Mem(MB)')
     else:
@@ -181,7 +181,7 @@ Tfork:   Time spent forking (%)""")
 
 
     def addRecord(Path,rec):
-        (I,BFull,BPart,BTot,T,St,Mem,QTot,QCon,NObjs,Treal,SCov,SUnc,QT,Ts,Tcex,Tf) = rec
+        (I,BFull,BPart,BTot,T,St,Mem,QTot,QCon,NObjs,Treal,SCov,SUnc,QT,Ts,Tcex,Tf,Tr,Tucex) = rec
 
         # special case for straight-line code: report 100% branch coverage
         if BTot == 0:
@@ -196,7 +196,7 @@ Tfork:   Time spent forking (%)""")
         AvgQC = int(QCon/max(1,QTot))
         if (opts.printAll):
             table.append((Path, I, Treal, coverage, 100.*(2*BFull+BPart)/(2.*BTot),
-                          SCov+SUnc, 100.*Ts/Treal, St, Mem, QTot, AvgQC, 100.*Tcex/Treal, 100.*Tf/Treal))
+                          SCov+SUnc, 100.*Ts/Treal, St, Mem, QTot, AvgQC, 100.*Tcex/Treal, 100.*Tf/Treal, 100.*Tr/Treal, 100.*Tucex/Treal))
         elif (opts.printMore):
             table.append((Path, I, Treal, coverage, 100.*(2*BFull+BPart)/(2.*BTot),
                           SCov+SUnc, 100.*Ts/Treal, St, Mem))
@@ -205,7 +205,8 @@ Tfork:   Time spent forking (%)""")
                           SCov+SUnc, 100.*Ts/Treal))
         
     def addRow(Path,data):
-        data = tuple(data[:17]) + (None,)*(17-len(data))
+	l=19
+        data = tuple(data[:19]) + (None,)*(19-len(data))
         addRecord(Path,data)
         if not summary:
             summary[:] = list(data)

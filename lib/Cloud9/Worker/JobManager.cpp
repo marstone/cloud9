@@ -918,6 +918,7 @@ void JobManager::executeJobsBatch(boost::unique_lock<boost::mutex> &lock,
 
 void JobManager::executeJob(boost::unique_lock<boost::mutex> &lock,
     ExecutionJob *job, bool spawnNew) {
+  
   WorkerTree::NodePin nodePin = job->getNode(); // Keep the node around until we finish with it
   WorkerTree::Node *brokenNode = NULL;
 
@@ -962,6 +963,7 @@ void JobManager::executeJob(boost::unique_lock<boost::mutex> &lock,
 
       job->replayInstr = 0;
     } else {
+      // LOG(INFO) << "~~~ stepInNode ";
       stepInNode(lock, nodePin.get(), 1);
     }
   }

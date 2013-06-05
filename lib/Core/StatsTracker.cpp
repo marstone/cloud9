@@ -485,6 +485,7 @@ void StatsTracker::writeStatsHeader() {
              << "'CexCacheTime',"
              << "'ForkTime',"
              << "'ResolveTime',"
+             << "'CexUncacheTime',"
              << ")\n";
   statsFile->flush();
 }
@@ -512,6 +513,7 @@ void StatsTracker::writeStatsLine() {
              << "," << stats::cexCacheTime / 1000000.
              << "," << stats::forkTime / 1000000.
              << "," << stats::resolveTime / 1000000.
+             << "," << stats::cexUncacheTime / 1000000.
              << ")\n";
   statsFile->flush();
 }

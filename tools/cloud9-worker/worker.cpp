@@ -90,7 +90,7 @@ namespace {
 cl::opt<bool>
         StandAlone("stand-alone",
                 cl::desc("Enable running a worker in stand alone mode"),
-                cl::init(false));
+                cl::init(true));
 
 cl::opt<std::string> ReplayPath("c9-replay-path", cl::desc(
     "Instead of executing jobs, just do a replay of a path. No load balancer involved."));
@@ -213,12 +213,16 @@ static int watchdog(int pid) {
 }
 
 int main(int argc, char **argv, char **envp) {
+
+
   // Make sure to clean up properly before any exit point in the program
   atexit(llvm::llvm_shutdown);
 
   google::InitGoogleLogging(argv[0]);
 
   GOOGLE_PROTOBUF_VERIFY_VERSION;
+
+  LOG(INFO) << "~~~~~~ c9 worker started. export GLOG_logtostderr=1 to print to stdout;GLOG_v={int} for details.";
 
   // JIT initialization
   llvm::InitializeNativeTarget();

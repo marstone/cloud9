@@ -65,8 +65,13 @@ namespace {
            cl::desc("Use constraint independence"));
 
   cl::opt<bool>
-  UseCexCache("use-cex-cache",
+  UseCexShared("use-cex-shared",
               cl::init(true),
+        cl::desc("Use counterexample caching in shared memory"));
+
+  cl::opt<bool>
+  UseCexCache("use-cex-cache",
+              cl::init(false),
         cl::desc("Use counterexample caching"));
 
   cl::opt<bool>
@@ -160,6 +165,9 @@ Executor::Executor(const InterpreterOptions &opts,
 	if (UseCexCache)
 		solver = createCexCachingSolver(solver);
 
+	if (UseCexShared)
+		solver = createCexSharedSolver(solver);
+
 	if (UseCache)
 		solver = createCachingSolver(solver);
 
@@ -234,7 +242,7 @@ void Executor::stepInstruction(ExecutionState &state) {
   if (DebugPrintInstructions) {
     printFileLine(state, state.pc());
     std::cerr << std::setw(10) << stats::instructions << " ";
-    llvm::errs() << *(state.pc()->inst);
+    llvm::errs() << *(state.pc()->inst) << "\n";
   }
 
   if (statsTracker)
@@ -315,9 +323,10 @@ void Executor::runFunctionAsMain(Function *f, int argc, char **argv,
 
   ExecutionState *state = createRootState(f);
   initRootState(state, argc, argv, envp);
-
+  LOG(INFO) << "~~~~~~~ start to run.";
   run(*state);
 
+  LOG(INFO) << "~~~~~~~ end of the run.";
   destroyStates();
 
 }

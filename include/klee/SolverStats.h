@@ -26,6 +26,8 @@ namespace stats {
   extern Statistic queryCounterexamples;
   extern Statistic queryTime;
 
+  // add by marstone, 2013/06/06
+  extern Statistic cexUncacheTime;
 }
 }
 
